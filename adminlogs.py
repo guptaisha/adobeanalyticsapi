@@ -103,7 +103,7 @@ querystring = {"startDate": start_date_str, "endDate": end_date_str, "limit":"10
 
 headers = {
     "x-api-key": "eb5cf2643bd1412491a709483447b1b2",
-    "Authorization": "Bearer" + access_token,
+    "Authorization": "Bearer " + access_token,
     "Accept": "application/json"
     }
 
