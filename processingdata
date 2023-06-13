@@ -1,0 +1,47 @@
+import pandas as pd
+from datetime import datetime, timedelta
+import paramiko
+
+# Set the SFTP server details
+server = 'ftp3.omniture.com'
+username = 'username'
+password = 'password'
+remote_file_path = '/'
+local_file_path = '/'
+
+# Create an SSH client object
+ssh = paramiko.SSHClient()
+
+# Automatically add the server's host key
+ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+
+# Connect to the SFTP server
+try:
+    ssh.connect(server, username=username, password=password)
+
+    sftp = ssh.open_sftp()
+    sftp.get(remote_file_path, local_file_path)
+    sftp.close()
+    ssh.close()
+
+    # Connection successful
+    print('File retrieved successfully')
+except Exception as e:
+    # Connection failed
+    print('Connection failed:', e)
+
+# Read the input file as a pandas DataFrame
+df = pd.read_csv('arim.csv')
+
+# Define a dictionary with the old and new column names
+column_names = {"Log source ID (v34) (evar34)": 'Log source ID',
+# Convert the 'Date' column to a datetime object in yyyy-mm-dd format
+df['Date'] = pd.to_datetime(df['Date'], format='%d/%m/%Y').dt.strftime('%Y-%m-%d')
+
+# Convert the 'BAN' and 'CTN' columns to integer data type
+df['BAN'] = df['BAN'].fillna(0)
+df['CTN'] = df['CTN'].fillna(0)
+df['Contact ID'] = df['Contact ID'].fillna(0)
+df['BAN'] = df['BAN'].fillna('').astype(int).astype(str).str.replace('.0', '').replace('0', '')
+df['CTN'] = df['CTN'].fillna('').astype(int).astype(str).str.replace('.0', '').replace('0', '')
+df['Contact ID'] = df['Contact ID'].fillna('').astype(int).astype(str).str.replace('.0', '').replace('0', '')
